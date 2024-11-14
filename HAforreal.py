@@ -4,9 +4,10 @@
 #Name, Vorname, Matrikelnummer
 #Name, Vorname, Matrikelnummer
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-#from matplotlib.cm import binary
+
 from scipy.signal import convolve2d
 from skimage.io import imread
 from skimage.color import rgb2gray
@@ -123,3 +124,4 @@ def NumSimHA2(z, n, J, k):
 		k = 2
 		J = 100
 		NumSimHA2(None, n, J, k)
+print("Current Working Directory:", os.getcwd())
