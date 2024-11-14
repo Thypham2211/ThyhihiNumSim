@@ -56,7 +56,8 @@ def initialize_grid(n, k):
 	acorn_grid = np.tile(acorn, (n // acorn.shape[0] + 1, n // acorn.shape[1] + 1))[:n, :n]
 
 	#Bild einlesen (k = 4)
-	img = imread('ihr_Foto.jpg')
+	#img = imread('ihr_Foto.jpg')
+	img = imread('herrhess.jpg')
 	img_gray = rgb2gray(img)
 	#rgb2gray konvertiert das Bild in Graustufen (Helligkeit zwischen 0 und 1).
 	img_bin = img_gray > 0.5
@@ -130,7 +131,7 @@ def NumSimHA2 (n, J, k):
 
 
 #Startkonfiguration printen:
-grid = initialize_grid(10, 2)
-print(grid)
+grid = initialize_grid(200, 4)
+#print(grid)
 plt.imshow(grid, cmap='binary')  # cmap='binary' für Schwarz-Weiß
 plt.show()
