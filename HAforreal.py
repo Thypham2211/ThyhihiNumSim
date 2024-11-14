@@ -4,17 +4,12 @@
 #Name, Vorname, Matrikelnummer
 #Name, Vorname, Matrikelnummer
 import numpy as np
-import os
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-
 from scipy.signal import convolve2d
 from skimage.io import imread
 from skimage.color import rgb2gray
 from skimage.transform import resize
-
-#import matplotlib
-#matplotlib.rcParams['animation.ffmpeg_path'] = '/opt/homebrew/bin/ffmpeg'
 from matplotlib.animation import FFMpegWriter
 
 #Erstelle den FFMpegWriter
@@ -27,10 +22,10 @@ def initialize_grid(n, k):
 	random_grid = np.random.choice([0, 1], size = (n, n), p =[0.5, 0.5])
 
 #	Tub mit Störung (k = 2)
-	tub = np.array([[0, 1, 1, 0],
-					[1, 0, 0, 1],
-					[1, 0, 0, 1],
-					[0, 1, 1, 0]])
+	tub = np.array([[0, 1, 0, 0],
+					[1, 0, 1, 0],
+					[0, 1, 0, 0],
+					[0, 0, 0, 0]])
 	mid = n // 2
 	tub_grid = np.zeros((n, n))
 	tub_grid[mid - 2:mid + 2, mid - 2:mid + 2] = tub
@@ -38,12 +33,18 @@ def initialize_grid(n, k):
 	#Füge eine Störung hinzu
 
 	#Acorn-Struktur (k = 3)
-	acorn = np.array([[0, 1, 0, 0, 0, 0, 0],
-			  [0, 0, 0, 1, 0, 0, 0],
-			  [1, 1, 0, 0, 1, 1, 1]])
+	acorn = np.array([
+		[0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 1, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 1, 0, 0, 0, 0],
+		[0, 1, 1, 0, 0, 1, 1, 1, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0],
+	])
 	acorn_grid = np.zeros((n, n))
+	#Berechne den Startpunkt (linke obere Ecke) für die Platzierung von acorn
 	acorn_mid_row = mid - acorn.shape[0] // 2
 	acorn_mid_col = mid - acorn.shape[1] // 2
+	#Platzieren von acorn in acorn_grid
 	acorn_grid[acorn_mid_row:acorn_mid_row + acorn.shape[0],
 	acorn_mid_col:acorn_mid_col + acorn.shape[1]] = acorn
 
@@ -64,7 +65,7 @@ def initialize_grid(n, k):
 	return configurations[k - 1]
 
 
-def NumSimHA2(z, n, J, k):
+def NumSimHA2 (n, J, k):
 	#Parameter:
 	#z = Startkonfiguration
 	z = initialize_grid(n, k)
@@ -73,8 +74,8 @@ def NumSimHA2(z, n, J, k):
 		#--------------------------------------------------
 	#Filter 'kernel', der bestimmt, wie die Nachbarschaft berechnet wird. Hier werden nur die ECHTE NACHBARN summiert.
 	kernel = np.array([[1, 1, 1],
-		   [1, 0, 1],
-		   [1, 1, 1]])
+		   				[1, 0, 1],
+		   				[1, 1, 1]])
 
 	fig,ax = plt.subplots()
 	img = ax.imshow(z, cmap = 'binary')
@@ -101,8 +102,6 @@ def NumSimHA2(z, n, J, k):
 		img.set_array(z)
 		frames.append([plt.imshow(z, cmap = 'binary', animated = True)])
 
-		t += 1
-
 		#Erstellung der Animation
 		#ArtistAnimation: Erstellt eine Animation aus der Liste frames.
 		#interval=100: Setzt die Zeit zwischen den Frames auf 100 Millisekunden.
@@ -111,17 +110,16 @@ def NumSimHA2(z, n, J, k):
 
 		#Speichern als MP4
 		#fps steht für "Frames per Second" (Bilder pro Sekunde).
-		ani.save("/NumSim_HA/ThyhihiNumSim/simulation_animation.mp4", writer = writer)
+		ani.save('AnimationHA2.mp4', writer = writer)
 		#writer="ffmpeg", fps=10)
 
 		#Anzeige der Animation im Jupyter Notebook
-		plt.colorbar()
-		plt.show()
+	#plt.colorbar()
+	plt.show()
 
 
-		#Beispiel für die Verwendung
-		n = 100
-		k = 2
-		J = 100
-		NumSimHA2(None, n, J, k)
-print("Current Working Directory:", os.getcwd())
+#Beispiel für die Verwendung
+
+#NumSimHA2(None, n, J, k)
+NumSimHA2(100,50,3)
+
