@@ -26,11 +26,15 @@ def initialize_grid(n, k):
 					[1, 0, 1, 0],
 					[0, 1, 0, 0],
 					[0, 0, 0, 0]])
-	mid = n // 2
-	tub_grid = np.zeros((n, n))
-	tub_grid[mid - 2:mid + 2, mid - 2:mid + 2] = tub
-	tub_grid[mid, mid] = 1
+	#mid = n // 2
+	#tub_grid = np.zeros((n, n))
+	#tub_grid[mid - 2:mid + 2, mid - 2:mid + 2] = tub
+	#tub_grid[mid, mid] = 1
 	#Füge eine Störung hinzu
+
+	# Wiederhole das Tub-Muster über die gesamte Matrix
+	tub_grid = np.tile(tub, (n // tub.shape[0] + 1, n // tub.shape[1] + 1))[:n, :n]
+	tub_grid[n // 2, n // 2] = 1  # Füge eine Störung im Zentrum hinzu
 
 	#Acorn-Struktur (k = 3)
 	acorn = np.array([
@@ -40,15 +44,18 @@ def initialize_grid(n, k):
 		[0, 1, 1, 0, 0, 1, 1, 1, 0],
 		[0, 0, 0, 0, 0, 0, 0, 0, 0],
 	])
-	acorn_grid = np.zeros((n, n))
+	#acorn_grid = np.zeros((n, n))
 	#Berechne den Startpunkt (linke obere Ecke) für die Platzierung von acorn
-	acorn_mid_row = mid - acorn.shape[0] // 2
-	acorn_mid_col = mid - acorn.shape[1] // 2
+	#acorn_mid_row = mid - acorn.shape[0] // 2
+	#acorn_mid_col = mid - acorn.shape[1] // 2
 	#Platzieren von acorn in acorn_grid
-	acorn_grid[acorn_mid_row:acorn_mid_row + acorn.shape[0],
-	acorn_mid_col:acorn_mid_col + acorn.shape[1]] = acorn
+	#acorn_grid[acorn_mid_row:acorn_mid_row + acorn.shape[0],
+	#acorn_mid_col:acorn_mid_col + acorn.shape[1]] = acorn
 
-#Bild einlesen (k = 4)
+	# Wiederhole das Acorn-Muster über die gesamte Matrix
+	acorn_grid = np.tile(acorn, (n // acorn.shape[0] + 1, n // acorn.shape[1] + 1))[:n, :n]
+
+	#Bild einlesen (k = 4)
 	img = imread('ihr_Foto.jpg')
 	img_gray = rgb2gray(img)
 	#rgb2gray konvertiert das Bild in Graustufen (Helligkeit zwischen 0 und 1).
@@ -66,7 +73,6 @@ def initialize_grid(n, k):
 
 
 def NumSimHA2 (n, J, k):
-	#Parameter:
 	#z = Startkonfiguration
 	z = initialize_grid(n, k)
 	#𝐽 Zeitschritten, k = vier Anfangsverteilungen und n = Gridgröße -> werden beim Ausführen definiert
@@ -121,5 +127,5 @@ def NumSimHA2 (n, J, k):
 #Beispiel für die Verwendung
 
 #NumSimHA2(None, n, J, k)
-NumSimHA2(100,50,3)
+NumSimHA2(20,10,3)
 
