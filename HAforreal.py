@@ -1,8 +1,8 @@
-#Gruppe       Gruppennummer
-#Name, Vorname, Matrikelnummer
-#Name, Vorname, Matrikelnummer
-#Name, Vorname, Matrikelnummer
-#Name, Vorname, Matrikelnummer
+# Gruppe 01
+# Ngoc Bao Thy, Pham, 481509
+# Kossatz, Ida, 476046
+# Schade, Lucie, 465926
+# Marx, Loui, 465807
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -125,7 +125,12 @@ def NumSimHA2 (n, J, k):
 
 
 #Beispiel für die Verwendung
-
 #NumSimHA2(None, n, J, k)
-NumSimHA2(20,10,3)
+#NumSimHA2(20,10,3)
 
+
+#Startkonfiguration printen:
+grid = initialize_grid(10, 2)
+print(grid)
+plt.imshow(grid, cmap='binary')  # cmap='binary' für Schwarz-Weiß
+plt.show()
