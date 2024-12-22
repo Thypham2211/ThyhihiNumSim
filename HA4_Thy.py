@@ -121,90 +121,92 @@ def Figure1Plotter(n, m, NumSimVerschiebungsArray, delta_x, delta_y):
 
 
 
-def Scheibentheroie(n,m,F,c,delta_x,delta_y):
-    """Verantwortliche/r:
-
-    Wertet die Scheibentheorie aus und gibt die Verschiebungen der Scheibe zurück.
-    Args:
-        n (int): anzahl an Spalten im Scheibengitter
-        m (int): anzahl an Zeilen im Scheibengitter
-        F (float): Betrag der Kräfte, die auf die Oberkannte des Gitters wirken (bilden Streckenlast ab)
-        delta_x (float): Abstand zwischen den Gitterpunkten in x-Richtung
-        delta_y (float): Abstand zwischen den Gitterpunkten in y-Richtung
-    Returns:
-        (1D-np.array): Resultierende Biegelinie der Scheibentherorie in Form von einem 1D NumPy Array welches die
-        Verschiebung der Scheibe in y-Richtung angibt. Jedes Element gehört dabei zu einer x-Position auf der Scheibe.
+def Scheibentheorie(n, m, F, c, delta_x, delta_y):
     """
-    # Bestimme die Scheibenbiegeline
-
+    Wertet die Scheibentheorie aus und gibt die Verschiebungen der Scheibe in x- und y-Richtung zurück.
+    Args:
+        n (int): Anzahl an Spalten im Scheibengitter.
+        m (int): Anzahl an Zeilen im Scheibengitter.
+        F (float): Betrag der Kräfte, die auf die Oberkante des Gitters wirken (bilden Streckenlast ab).
+        c (float): Materialkonstante.
+        delta_x (float): Abstand zwischen den Gitterpunkten in x-Richtung.
+        delta_y (float): Abstand zwischen den Gitterpunkten in y-Richtung.
+    Returns:
+        tuple: Zwei NumPy-Arrays:
+            - `u_analytic`: Verschiebung in x-Richtung.
+            - `v_analytic`: Verschiebung in y-Richtung (Querverschiebung).
+    """
     # Parameter der Scheibe
-    l = n*delta_x    # Länge der Scheibe [m]
-    h = m/2*delta_y  # Höhe der Scheibe
+    l = n * delta_x    # Länge der Scheibe [m]
+    h = m / 2 * delta_y  # Höhe der Scheibe
 
     # Materialparameter
-    nu = 1 / 3             # Poissonzahl
-    Et = 4/3 * c           # Ergibt sich aus der Multiplikation mit E (-Modul) und t, t kürzt sich raus
-    q0 = F / delta_x       # Streckenlast
+    nu = 1 / 3          # Poissonzahl
+    Et = 4 / 3 * c      # Materialparameter (E-Modul multipliziert mit t)
+    q0 = F / delta_x    # Streckenlast
 
     # x-Koordinaten (n Gitterpunkte entlang x)
-    x = np.arange(0, n, step=delta_x) ### evt. muss dass im plott auch gecalled werden
 
-    # y - Koordinaten mit passender Anzahl für Plott
-    y = np.linspace(0,h,num=int(n/delta_x))
+    # Achtung: np_arrange nimmt die letzte werte nicht!
+    # z.b:
+    # x1 = np.arange(0, 5, step=0.2)------ Ausgabe: [0.  0.2  0.4  0.6  0.8  1.  1.2  1.4  1.6  1.8  2.  2.2  2.4  2.6  2.8  3.
+    #  3.2  3.4  3.6  3.8  4.  4.2  4.4  4.6  4.8]
+    # x2 = np.arange(5) * 0.2 ------------ Ausgabe: [0.  0.2 0.4 0.6 0.8]
+
+    x = np.arange(n) * delta_x
+
+    #da y-Anfangsposition überall gleich 0, müssen wir die y-Werte nicht definieren.
+    # Spricht: 0 + v_analytic = v_analytic)
 
     # Analytische Lösung (Scheibentheorie)
     u_analytic = -(q0 * nu) / (2 * Et) * x  # Längsverschiebung
-    v_analytic = -(q0 * h) / (Et) * (
+    v_analytic = -(q0 * h) / Et * (
         - (1 / (16 * h**4)) * (6 * l**2 * x**2 - 4 * l * x**3 + x**4)
         + (3 / 5) * (x**2 / h**2)
         + (3 / 8) * (nu**2 * x**2 / h**2)
-    ) # Querverschiebung
+    )
 
-    ScheibenBiegeline_x = x+u_analytic
-    ScheibenBiegeline_y = y + v_analytic
+    #ScheibenBiegeline ist eine 2D-Array ,die die Koordinaten von verschobene Teilchen enthält.
+    ScheibenBiegeline= np.array([x + u_analytic, v_analytic])
 
-    return ScheibenBiegeline_x, ScheibenBiegeline_y
+    return ScheibenBiegeline
 
-
-
-def Balkentheorie(n,m,F,c, delta_x, delta_y):
-    """Verantwortliche/r:
-
-    Wertet die Balkentheorie aus und gibt die Verschiebungen der Scheibe zurück.
-    Args:
-        n (int): anzahl an Spalten im Scheibengitter
-        m (int): anzahl an Zeilen im Scheibengitter
-        F (float): Betrag der Kräfte, die auf die Oberkannte des Gitters wirken (bilden Streckenlast ab)
-        delta_x (float): Abstand zwischen den Gitterpunkten in x-Richtung
-        delta_y (float): Abstand zwischen den Gitterpunkten in y-Richtung
-    Returns:
-        (1D-np.array): Resultierende Biegelinie der Balkentherorie in Form von einem 1D NumPy Array welches die
-        Verschiebung der Scheibe in y-Richtung angibt. Jedes Element gehört dabei zu einer x-Position auf der Scheibe.
+def Balkentheorie(n, m, F, c, delta_x, delta_y):
     """
-    # Bestimme die Balkenbiegeline
-
+    Wertet die Balkentheorie aus und gibt die Querverschiebung der Scheibe zurück.
+    Args:
+        n (int): Anzahl an Spalten im Scheibengitter.
+        m (int): Anzahl an Zeilen im Scheibengitter.
+        F (float): Betrag der Kräfte, die auf die Oberkante des Gitters wirken (bilden Streckenlast ab).
+        c (float): Materialkonstante.
+        delta_x (float): Abstand zwischen den Gitterpunkten in x-Richtung.
+        delta_y (float): Abstand zwischen den Gitterpunkten in y-Richtung.
+    Returns:
+        np.array: Resultierende Querverschiebung (v) als 1D NumPy Array.
+    """
     # Parameter der Scheibe
-    l = n*delta_x         # Länge der Scheibe [m]
-    h = m/2*delta_y          # Höhe der Scheibe
-
-    # x-Koordinaten (n Gitterpunkte entlang x)
-    x = np.arange(0, n, step=delta_x)
-
-    # y-Koordinaten
-    y=np.linspace(0,h,num=int(n/delta_x))
+    l = n * delta_x    # Länge der Scheibe [m]
+    h = m / 2 * delta_y  # Höhe der Scheibe
 
     # Materialparameter
-    EI = 8/9 *h**3 * c      # E-Modul multipiziert mit Trägheitsmoment I
+    EI = 8 / 9 * h**3 * c  # E-Modul multipliziert mit Trägheitsmoment I
     q0 = F / delta_x       # Streckenlast
-     #Analytische Lösung (Balkentheorie) für Querverschiebung
-    v_beam = (q0 / (EI)) * x**2 * (x**2 / 24 - l * x / 6 + l**2 / 4)
-    BalkenBiegeline = x, v_beam
+
+    # x-Koordinaten (n Gitterpunkte entlang x)
+    x = np.arange(n) * delta_x
+
+    # Analytische Lösung (Balkentheorie)
+    v_beam = (q0 / EI) * x**2 * (x**2 / 24 - l * x / 6 + l**2 / 4)
+
+    #BalkenBiegeline ist eine 2D-Array ,die die Koordinaten von verschobene Teilchen enthält.
+    BalkenBiegeline= np.array([x, v_beam])
 
     return BalkenBiegeline
 
 
 
-def Figure2Plotter(n, m, F, c, delta_x, delta_y):
+
+def Figure2Plotter(n, NumSimBiegeline, ScheibenBiegeline, BalkenBiegeline, delta_x, delta_y):
     """Verantwortliche/r:
     Args:
         n (int): anzahl an Spalten im Scheibengitter
@@ -226,24 +228,28 @@ def Figure2Plotter(n, m, F, c, delta_x, delta_y):
                 Legende.
     """
     # Erzeuge den Plot
-    # Anfangskoordinaten der Gitterpunkte (ähnlich wie beim 1. Plot)
-    x_coords = np.arange(n) * delta_x
+
     #Hier braucht man keine y-Koordinate definieren, da es um 1D Biegelinien geht.
     #Die Verschiebungen in y-Richtung wird mit den Arrays dargestellt.
     plt.figure(figsize=(8, 6))
 
-    # Plot der ursprünglichen Position der Gitterpunkte (Mittellinie des Balkens bei y = 0)
-    plt.plot(x_coords, np.zeros_like(x_coords), label='Ursprüngliche Position (Mittellinie)', color='k', linestyle='--')
+    # Extrahiere x- und y-Werte für Scheiben- und Balkenbiegung
+    x_scheiben, y_scheiben = ScheibenBiegeline
+    x_balken, y_balken = BalkenBiegeline
 
     # Plot der Biegelinien
-    plt.plot(x_coords, NumSimBiegeline, label='Numerische Simulation', color='b')
-    plt.plot(x_coords, ScheibenBiegeline, label='Scheibentheorie', color='g')
-    plt.plot(x_coords, BalkenBiegeline, label='Balkentheorie', color='r')
+    x_sim = np.arange(n) * delta_x  # x-Werte für die numerische Simulation
+    plt.plot(x_sim, NumSimBiegeline, label='Numerische Simulation', color='b')
+    plt.plot(x_scheiben, y_scheiben, label='Scheibentheorie', color='g')
+    plt.plot(x_balken, y_balken, label='Balkentheorie', color='r')
 
     # Achsenbeschriftungen und Titel
     plt.xlabel('x')
     plt.ylabel('y')
     plt.title('Figure 2: Biegelinien (einschließlich der ursprünglichen Position)')
+
+    # Y-Achse invertieren, um Biegung nach unten darzustellen
+    plt.gca().invert_yaxis()
 
     # Legende und Gitter
     plt.legend()
@@ -252,26 +258,6 @@ def Figure2Plotter(n, m, F, c, delta_x, delta_y):
     # Plot anzeigen
     plt.show()
 
-
-
-
-    #
-    ScheibenBiegeline_x, Scheibenbiegeline_y = Scheibentheroie(n, m, F, c, delta_x, delta_y)
-    BalkenBiegeline_x, BalkenBiegeline_y = Balkentheorie(n, m, F, c, delta_x, delta_y)
-    # Plot der Ergebnisse (Figure 2) - Querverschiebung
-    plt.figure(figsize=(10, 6))
-    plt.plot(ScheibenBiegeline_x,Scheibenbiegeline_y , label="Analytische Querverschiebung (Scheibentheorie)", linestyle="-.", color="red")
-    plt.plot(BalkenBiegeline_x, BalkenBiegeline_y, label="Querverschiebung (Balkentheorie)", linestyle="--", color="green")
-    plt.title("Biegelinen")
-    plt.xlabel("$x$")
-    plt.ylabel("$v(x)$")
-    plt.legend(loc="best")
-    # Y-Achse invertieren, um Biegung nach unten darzustellen
-    plt.gca().invert_yaxis()
-    plt.grid()
-    plt.tight_layout()
-    plt.show()
-    return None
 
 
 
@@ -318,4 +304,13 @@ c = 1000  # Materialkonstante
 delta_x = 0.1  # Abstand zwischen den Gitterpunkten in x-Richtung
 delta_y = 0.1  # Abstand zwischen den Gitterpunkten in y-Richtung
 
-Figure2Plotter(n, m, F, c, delta_x, delta_y)
+# Testdaten erstellen
+ScheibenBiegeline = Scheibentheorie(n, m, F, c, delta_x, delta_y)
+BalkenBiegeline = Balkentheorie(n, m, F, c, delta_x, delta_y)
+
+# Numerische Simulation (synthetische Daten für Testzwecke)
+x_sim = np.arange(n) * delta_x
+NumSimBiegeline = np.sin(np.pi * x_sim / (n * delta_x)) * 0.05  # Beispielhafte sinusförmige Biegelinie
+
+# Funktion testen
+Figure2Plotter(n, NumSimBiegeline, ScheibenBiegeline, BalkenBiegeline, delta_x, delta_y)
