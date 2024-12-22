@@ -237,8 +237,8 @@ def Figure2Plotter(n, NumSimBiegeline, ScheibenBiegeline, BalkenBiegeline, delta
     x_scheiben, y_scheiben = ScheibenBiegeline
     x_balken, y_balken = BalkenBiegeline
 
-    # Plot der Biegelinien
-    x_sim = np.arange(n) * delta_x  # x-Werte für die numerische Simulation
+    # Plot der Bi   x_sim = np.arange(n) * delta_x  # x-Werte für die numerische Simulationegelinien
+
     plt.plot(x_sim, NumSimBiegeline, label='Numerische Simulation', color='b')
     plt.plot(x_scheiben, y_scheiben, label='Scheibentheorie', color='g')
     plt.plot(x_balken, y_balken, label='Balkentheorie', color='r')
@@ -246,7 +246,7 @@ def Figure2Plotter(n, NumSimBiegeline, ScheibenBiegeline, BalkenBiegeline, delta
     # Achsenbeschriftungen und Titel
     plt.xlabel('x')
     plt.ylabel('y')
-    plt.title('Figure 2: Biegelinien (einschließlich der ursprünglichen Position)')
+    plt.title('Figure 2: Vergleich der Biegelinien')
 
     # Y-Achse invertieren, um Biegung nach unten darzustellen
     plt.gca().invert_yaxis()
@@ -310,7 +310,8 @@ BalkenBiegeline = Balkentheorie(n, m, F, c, delta_x, delta_y)
 
 # Numerische Simulation (synthetische Daten für Testzwecke)
 x_sim = np.arange(n) * delta_x
-NumSimBiegeline = np.sin(np.pi * x_sim / (n * delta_x)) * 0.05  # Beispielhafte sinusförmige Biegelinie
+NumSimBiegeline = 0.14 * x_sim  # Beispielhafte sinusförmige Biegelinie
+print(NumSimBiegeline)
 
 # Funktion testen
 Figure2Plotter(n, NumSimBiegeline, ScheibenBiegeline, BalkenBiegeline, delta_x, delta_y)
